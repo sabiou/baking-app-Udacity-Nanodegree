@@ -1,0 +1,5 @@
+<fragment xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/recipes_list_fragment"
+    android:name="xyz.godi.bakingapp.ui.fragments.RecipesFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />
