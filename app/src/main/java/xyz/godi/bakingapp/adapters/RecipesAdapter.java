@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -65,6 +66,16 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
     @Override
     public int getItemCount() {
         return mRecipes.size();
+    }
+
+    public void setItems(List<Recipe> mRecipeList) {
+        mRecipes = new ArrayList<>();
+        mRecipes.addAll(mRecipeList);
+        notifyDataSetChanged();
+    }
+
+    public interface RecipesOnClickHandler {
+        void onClick(Recipe recipe);
     }
 
     class RecipeViewHolder extends RecyclerView.ViewHolder {

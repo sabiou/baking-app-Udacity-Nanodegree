@@ -21,8 +21,4 @@ public class RetrofitClient {
         // and return the retrofit object
         return retrofit;
     }
-
-    public static RecipesService getApiService() {
-        return getClient().create(RecipesService.class);
-    }
 }
