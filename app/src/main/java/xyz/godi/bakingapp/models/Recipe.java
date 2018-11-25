@@ -26,9 +26,9 @@ public class Recipe implements Parcelable {
     @SerializedName("name")
     private String name;
     @SerializedName("ingredients")
-    private List<Ingredients> ingredients = new ArrayList<>();
+    private List<Ingredients> ingredients;
     @SerializedName("steps")
-    private List<Steps> steps = new ArrayList<>();
+    private List<Steps> steps;
     @SerializedName("servings")
     private int servings;
     @SerializedName("image")

@@ -2,6 +2,7 @@ package xyz.godi.bakingapp.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -75,6 +76,7 @@ public class Ingredients implements Parcelable {
         this.ingredient = ingredient;
     }
 
+    @NonNull
     @Override
     public String toString() {
         return "Ingredients{" +

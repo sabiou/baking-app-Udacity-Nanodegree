@@ -1,6 +1,5 @@
 package xyz.godi.bakingapp.ui.activities;
 
-import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +7,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +25,7 @@ import xyz.godi.bakingapp.models.Recipe;
 import xyz.godi.bakingapp.utils.Listeners;
 import xyz.godi.bakingapp.utils.SpacingItemDecoration;
 
-public class MainActivity extends AppCompatActivity implements RecipesAdapter.RecipesOnClickHandler {
+public class MainActivity extends AppCompatActivity {
 
     public static final String LOG_TAG = MainActivity.class.getSimpleName();
     private static final String RECIPES_KEY = "recipes";
@@ -35,14 +36,14 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Re
 
     private RecipesAdapter adapter;
     private List<Recipe> mRecipeList;
-    private RecipesAdapter.RecipesOnClickHandler mListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        setupRecycler();
+
+        initView();
 
         if (savedInstanceState == null || !savedInstanceState.containsKey(RECIPES_KEY)) {
             mSwipeRefresh.setRefreshing(true);
@@ -50,12 +51,16 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Re
         } else {
             mRecipeList = savedInstanceState.getParcelable(RECIPES_KEY);
         }
+
+        loadRecipes();
     }
 
-    private void setupRecycler() {
+    private void initView() {
+        mRecipeList = new ArrayList<>();
         mRecipeRecycler.setHasFixedSize(true);
-        boolean isTwoPane = getResources().getBoolean(R.bool.istTwoPane);
+        adapter = new RecipesAdapter(this,mRecipeList);
         mRecipeRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        mRecipeRecycler.setAdapter(adapter);
         // add recycler item decoration
         mRecipeRecycler.addItemDecoration(new SpacingItemDecoration((int) getResources().getDimension(R.dimen.margin_medium)));
         // on itemTouchListener
@@ -66,35 +71,24 @@ public class MainActivity extends AppCompatActivity implements RecipesAdapter.Re
         // set refreshing if this method is called by our BroadcastReceiver
 
         RecipesService service = RetrofitClient.getClient().create(RecipesService.class);
-        Call<RecipeResponse> call = service.getRecipes();
-        call.enqueue(new Callback<RecipeResponse>() {
+        Call<List<Recipe>> call = service.getRecipes();
+        call.enqueue(new Callback<List<Recipe>>() {
             @Override
-            public void onResponse(Call<RecipeResponse> call, Response<RecipeResponse> response) {
-                mRecipeList = fetchResults(response);
-                adapter = new RecipesAdapter(getApplicationContext(), mRecipeList, new Listeners.OnItemClickListener() {
-                    @Override
-                    public void onItemCLick(int position) {
-                        mListener.onClick(mRecipeList.get(position));
-                    }
-                });
+            public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
+                if (response.isSuccessful()) {
+                    mRecipeList = response.body();
+                    mRecipeRecycler.setAdapter(new RecipesAdapter(getApplicationContext(),mRecipeList));
+                    adapter.setData(mRecipeList);
+                    adapter.notifyDataSetChanged();
+                    mSwipeRefresh.setRefreshing(false);
+                } else {
+                    finish();
+                }
             }
 
             @Override
-            public void onFailure(Call<RecipeResponse> call, Throwable t) {
-                Log.e(this.getClass().getSimpleName(),t.toString());
+            public void onFailure(Call<List<Recipe>> call, Throwable t) {
             }
         });
-    }
-
-    private List<Recipe> fetchResults(Response<RecipeResponse> response) {
-        RecipeResponse recipeResponse = response.body();
-        return recipeResponse.results;
-    }
-
-    @Override
-    public void onClick(Recipe recipe) {
-        Intent intent = new Intent(this, RecipeDetailsActivity.class);
-        intent.putExtra(RecipeDetailsActivity.RECIPE_KEY, recipe);
-        startActivity(intent);
     }
 }
