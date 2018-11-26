@@ -47,13 +47,14 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
         // set the recipe name
         holder.tv_recipe_name.setText(recipeItem.getName());
         // the recipes servings
-        holder.tv_servings.setText(recipeItem.getServings());
         // the recipe image if there's one
         String img = recipeItem.getImage();
-        Picasso.get()
-                .load(img)
-                .placeholder(R.drawable.ic_tilda_icons_5ev_cake)
-                .into(holder.iv_recipe);
+        if (!img.isEmpty()) {
+            Picasso.get()
+                    .load(img)
+                    .placeholder(R.drawable.ic_tilda_icons_5ev_cake)
+                    .into(holder.iv_recipe);
+        }
     }
 
     @Override
