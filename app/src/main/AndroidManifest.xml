@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:fullBackupContent="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.activities.MainActivity">
+        <activity android:name=".ui.activities.RecipesActivity"
+            android:label="@string/recipes">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -22,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.activities.RecipeDetailsActivity"
-            android:parentActivityName=".ui.activities.MainActivity">
+            android:parentActivityName=".ui.activities.RecipesActivity">
         </activity>
     </application>
 

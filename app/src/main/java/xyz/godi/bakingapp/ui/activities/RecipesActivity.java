@@ -5,11 +5,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,16 +16,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import xyz.godi.bakingapp.R;
 import xyz.godi.bakingapp.adapters.RecipesAdapter;
-import xyz.godi.bakingapp.api.RecipeResponse;
 import xyz.godi.bakingapp.api.RecipesService;
 import xyz.godi.bakingapp.api.RetrofitClient;
 import xyz.godi.bakingapp.models.Recipe;
-import xyz.godi.bakingapp.utils.Listeners;
 import xyz.godi.bakingapp.utils.SpacingItemDecoration;
 
-public class MainActivity extends AppCompatActivity {
+public class RecipesActivity extends AppCompatActivity {
 
-    public static final String LOG_TAG = MainActivity.class.getSimpleName();
+    public static final String LOG_TAG = RecipesActivity.class.getSimpleName();
     private static final String RECIPES_KEY = "recipes";
     @BindView(R.id.recipeRecycler)
     RecyclerView mRecipeRecycler;
@@ -40,7 +36,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_recipes);
         ButterKnife.bind(this);
 
         initView();
