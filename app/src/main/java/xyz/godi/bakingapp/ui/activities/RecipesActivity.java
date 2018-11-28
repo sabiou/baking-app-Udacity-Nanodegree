@@ -1,10 +1,12 @@
 package xyz.godi.bakingapp.ui.activities;
 
+import android.os.Handler;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +50,31 @@ public class RecipesActivity extends AppCompatActivity {
             mRecipeList = savedInstanceState.getParcelable(RECIPES_KEY);
         }
 
+        // set refresh listener
+        mSwipeRefresh.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                // call to refresh
+                refresh();
+            }
+        });
+
+        // load the recipes from server
         loadRecipes();
+    }
+
+    // refresh medthod
+    private void refresh() {
+        // delay the refresh for content fetch
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                // load recipes
+                loadRecipes();
+                // stop the refreshing after loading complete
+                mSwipeRefresh.setRefreshing(false);
+            }
+        },3000);
     }
 
     private void initView() {
@@ -63,9 +89,9 @@ public class RecipesActivity extends AppCompatActivity {
         mRecipeRecycler.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener());
     }
 
+    // Load recipes from server
     private void loadRecipes() {
         // set refreshing if this method is called by our BroadcastReceiver
-
         RecipesService service = RetrofitClient.getClient().create(RecipesService.class);
         Call<List<Recipe>> call = service.getRecipes();
         call.enqueue(new Callback<List<Recipe>>() {
@@ -84,6 +110,8 @@ public class RecipesActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
+                // log the error message
+                Log.e(LOG_TAG, t.getMessage());
             }
         });
     }
