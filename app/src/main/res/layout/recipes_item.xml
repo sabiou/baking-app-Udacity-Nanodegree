@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_gravity="fill">
+
+    <android.support.v7.widget.CardView
+        android:id="@+id/cv_recipes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="4dp"
+        card_view:cardUseCompatPadding="true">
+
+        <ImageView
+            android:id="@+id/iv_recipe_image"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_marginBottom="30dp"
+            app:srcCompat="@drawable/ic_tilda_icons_5ev_cake"
+            android:contentDescription="@string/recipe_image_description" />
+
+        <TextView
+            android:id="@+id/tv_recipe_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:background="#BBFFFFFF"
+            android:foregroundGravity="bottom"
+            android:gravity="center"
+            android:padding="8dp"
+            android:textColor="#444444"
+            android:textSize="18sp"
+            tools:text="Recipe Title"/>
+
+    </android.support.v7.widget.CardView>
+
+
+</GridLayout>
