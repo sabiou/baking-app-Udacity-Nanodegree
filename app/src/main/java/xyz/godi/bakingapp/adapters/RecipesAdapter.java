@@ -46,7 +46,6 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
         final Recipe recipeItem = mRecipes.get(i);
         // set the recipe name
         holder.tv_recipe_name.setText(recipeItem.getName());
-        // the recipes servings
         // the recipe image if there's one
         String img = recipeItem.getImage();
         if (!img.isEmpty()) {
@@ -69,11 +68,9 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
 
     class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        @BindView(R.id.recipeName)
+        @BindView(R.id.tv_recipe_name)
         TextView tv_recipe_name;
-        @BindView(R.id.tv_servings)
-        TextView tv_servings;
-        @BindView(R.id.iv_recipe)
+        @BindView(R.id.iv_recipe_image)
         AppCompatImageView iv_recipe;
 
         RecipeViewHolder(@NonNull View itemView) {

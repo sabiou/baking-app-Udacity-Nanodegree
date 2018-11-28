@@ -23,7 +23,7 @@
             android:contentDescription="@string/recipe_image_description" />
 
         <TextView
-            android:id="@+id/tv_recipe_title"
+            android:id="@+id/tv_recipe_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center|bottom"
