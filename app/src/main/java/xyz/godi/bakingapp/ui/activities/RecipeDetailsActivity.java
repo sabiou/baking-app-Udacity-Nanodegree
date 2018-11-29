@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import java.util.List;
 
+import butterknife.BindView;
 import xyz.godi.bakingapp.R;
 import xyz.godi.bakingapp.models.Recipe;
+import xyz.godi.bakingapp.utils.Helpers;
 
 public class RecipeDetailsActivity extends AppCompatActivity {
 
@@ -16,6 +19,9 @@ public class RecipeDetailsActivity extends AppCompatActivity {
 
     private List<Recipe> mRecipes;
     private Recipe recipe;
+    private View view;
+
+    private boolean isTwoPane;
 
 
     @Override
@@ -24,18 +30,24 @@ public class RecipeDetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_recipe_details);
 
         // take data from child activity
-        Intent intent = getIntent();
-        recipe = intent.getParcelableExtra(RECIPE_KEY);
+        Bundle recipeBundle = getIntent().getExtras();
+        if (recipeBundle != null && recipeBundle.containsKey(RECIPE_KEY)) {
+            recipe = recipeBundle.getParcelable(RECIPE_KEY);
+        } else {
+            // show a message in SnackBar
+            Helpers.createSnackBar(this,view,"Failed to load recipes");
+        }
 
         // action bar
         ActionBar actionBar = getSupportActionBar();
-        setTitle(recipe.getName());
+        if (actionBar != null) {
+            actionBar.setTitle(recipe.getName());
+        }
 
         // ui
         populateUI();
     }
 
     private void populateUI() {
-        
     }
 }
