@@ -17,6 +17,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+
+    compileOptions {
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 
@@ -57,4 +61,7 @@ dependencies {
     implementation "android.arch.lifecycle:runtime:$lifecycle_version"
     implementation "android.arch.lifecycle:viewmodel:$lifecycle_version"
     implementation "android.arch.lifecycle:extensions:$lifecycle_version"
+
+     // ExoPlayer
+    implementation 'com.google.android.exoplayer:exoplayer:2.6.1'
 }
