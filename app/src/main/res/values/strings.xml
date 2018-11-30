@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">BakingApp</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="recipes">Recipes</string>
     <string name="recipe_image_description">Recipe Image</string>
+    <string name="thumbnail_image">Thumbnail image</string>
+    <string name="video_not_available">Video not available</string>
+    <string name="previous">Previous</string>
+    <string name="next">Next</string>
 </resources>
