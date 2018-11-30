@@ -1,6 +1,5 @@
 package xyz.godi.bakingapp.ui.activities;
 
-import android.content.Intent;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -8,7 +7,6 @@ import android.view.View;
 
 import java.util.List;
 
-import butterknife.BindView;
 import xyz.godi.bakingapp.R;
 import xyz.godi.bakingapp.models.Recipe;
 import xyz.godi.bakingapp.utils.Helpers;
@@ -49,5 +47,6 @@ public class RecipeDetailsActivity extends AppCompatActivity {
     }
 
     private void populateUI() {
+
     }
 }
