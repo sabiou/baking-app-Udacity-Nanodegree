@@ -35,7 +35,7 @@
                 android:visibility="gone" />
 
             <TextView
-                android:id="@+id/tv_no_video_available"
+                android:id="@+id/tv_no_video"
                 android:layout_width="match_parent"
                 android:layout_height="250dp"
                 android:background="@android:color/black"

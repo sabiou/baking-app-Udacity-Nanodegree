@@ -16,8 +16,9 @@ public class RecipeDetailsActivity extends AppCompatActivity {
     public static final String RECIPE_KEY = "recipe_key";
 
     private List<Recipe> mRecipes;
-    private Recipe recipe;
+    public Recipe recipe;
     private View view;
+    public int index;
 
     private boolean isTwoPane;
 
