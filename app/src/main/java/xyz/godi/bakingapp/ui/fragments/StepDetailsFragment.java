@@ -1,17 +1,22 @@
 package xyz.godi.bakingapp.ui.fragments;
 
 import android.app.Fragment;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.exoplayer2.DefaultLoadControl;
+import com.google.android.exoplayer2.DefaultRenderersFactory;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.RenderersFactory;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.extractor.DefaultExtractorsFactory;
 import com.google.android.exoplayer2.source.ExtractorMediaSource;
@@ -31,6 +36,8 @@ import xyz.godi.bakingapp.ui.activities.StepDetailsActivity;
 
 public class StepDetailsFragment extends Fragment {
 
+    private static final String STEP_KEY = "step";
+    private static final String RECIPE_KEY = "recipe";
     private static int index;
     @BindView(R.id.exo_player_view)
     SimpleExoPlayerView mPlayerView;
@@ -72,7 +79,7 @@ public class StepDetailsFragment extends Fragment {
         initMedia();
         initNavigation();
         initButtonListener();
-
+        setFullScreenVideoConfiguration();
         return rootView;
     }
 
@@ -106,6 +113,28 @@ public class StepDetailsFragment extends Fragment {
     private void initButtonListener() {
         setNextStepListener();
         setPreviousStepListener();
+    }
+
+    private void setFullScreenVideoConfiguration() {
+        boolean isOnLandscape =
+                getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
+        if (isOnLandscape && !isTablet) {
+            setFullScreenPlayer();
+            hideNavButtons();
+        }
+    }
+
+    private void hideNavButtons() {
+        nextStep.setVisibility(View.GONE);
+        previousStep.setVisibility(View.GONE);
+    }
+
+    private void setFullScreenPlayer() {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        mPlayerView.setLayoutParams(
+                new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,height));
     }
 
     private void setPreviousStepListener() {
@@ -169,14 +198,16 @@ public class StepDetailsFragment extends Fragment {
 
     private void initExoPlayer(String videoUri) {
         displayPlayer();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            mExoPlayer = ExoPlayerFactory.newSimpleInstance(getContext(),
-                    new DefaultTrackSelector(), new DefaultLoadControl());
-            mPlayerView.setPlayer(mExoPlayer);
-            mExoPlayer.prepare(getMediaSource(videoUri));
-            mExoPlayer.seekTo(playerPosition);
-            mExoPlayer.setPlayWhenReady(playWhenReady);
+        RenderersFactory renderersFactory = null;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) {
+            renderersFactory = new DefaultRenderersFactory(getContext());
         }
+        mExoPlayer = ExoPlayerFactory.newSimpleInstance(renderersFactory,
+                new DefaultTrackSelector(), new DefaultLoadControl());
+        mPlayerView.setPlayer(mExoPlayer);
+        mExoPlayer.prepare(getMediaSource(videoUri));
+        mExoPlayer.seekTo(playerPosition);
+        mExoPlayer.setPlayWhenReady(playWhenReady);
     }
 
     private MediaSource getMediaSource(String videoUri) {
@@ -214,7 +245,58 @@ public class StepDetailsFragment extends Fragment {
     }
 
     private void restoreIntanceState(Bundle savedInstanceState) {
-
+        index = savedInstanceState.getInt(getString(R.string.index_key));
+        mRecipe = savedInstanceState.getParcelable(RECIPE_KEY);
+        playerPosition = savedInstanceState.getLong(getString(R.string.player_position));
+        playWhenReady = savedInstanceState.getBoolean(getString(R.string.play_when_ready));
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(getString(R.string.index_key), index);
+        outState.putParcelable(RECIPE_KEY, mRecipe);
+        if (mExoPlayer != null) {
+            savePlayerState(outState);
+        }
+    }
+
+    private void savePlayerState(Bundle outState) {
+        outState.putLong(getString(R.string.player_position), mExoPlayer.getCurrentPosition());
+        outState.putBoolean(getString(R.string.play_when_ready), mExoPlayer.getPlayWhenReady());
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (mExoPlayer != null) {
+            onPauseState();
+        }
+    }
+
+    private void onPauseState() {
+        playWhenReady = mExoPlayer.getPlayWhenReady();
+        playerPosition = mExoPlayer.getCurrentPosition();
+        mExoPlayer.release();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        initMedia();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        releasePlayer();
+    }
+
+    private void releasePlayer() {
+        if (mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
+    }
 }
