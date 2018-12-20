@@ -8,8 +8,13 @@ Baking app allow Udacity’s resident baker-in-chief, Miriam, to share her recip
 * [Retrofit](https://square.github.io/retrofit/).
 * [ButterKnife](jakewharton.github.io/butterknife/)
 * [Picasso](square.github.io/picasso/)
-* [Room](https://developer.android.com/topic/libraries/architecture/room)
+* [DataBinding](https://developer.android.com/topic/libraries/data-binding)
+* [Gson](github.com/google/gson)
+* [ExoPlayer](github.com/google/exoplayer)
+* [Espresso testing](https://developer.android.com/training/testing/espresso/)
 
 # Requirements
 * Android Studio
 * Android SDK & tools version 28
+
+# screenshots
