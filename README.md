@@ -17,7 +17,7 @@ Baking app allow Udacity’s resident baker-in-chief, Miriam, to share her recip
 * Android Studio
 * Android SDK & tools version 28
 
-## screenshots
+## Screenshots
 <h4 align="center">
 <img src="screenshoots/main.png" height="350" width="200">
 <img src="screenshoots/stepslist.png" height="350" width="200">
