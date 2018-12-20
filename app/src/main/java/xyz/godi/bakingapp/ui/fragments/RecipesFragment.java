@@ -1,14 +1,19 @@
-package xyz.godi.bakingapp.ui.activities;
+package xyz.godi.bakingapp.ui.fragments;
 
-import android.os.Handler;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
+import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -21,33 +26,42 @@ import xyz.godi.bakingapp.adapters.RecipesAdapter;
 import xyz.godi.bakingapp.api.RecipesService;
 import xyz.godi.bakingapp.api.RetrofitClient;
 import xyz.godi.bakingapp.models.Recipe;
+import xyz.godi.bakingapp.ui.activities.StepsListActivity;
 import xyz.godi.bakingapp.utils.SpacingItemDecoration;
 
-public class RecipesActivity extends AppCompatActivity {
+public class RecipesFragment extends Fragment implements RecipesAdapter.RecipeClickListener {
 
-    public static final String LOG_TAG = RecipesActivity.class.getSimpleName();
+    private Context mContext;
+    private RecipesAdapter adapter;
+    private List<Recipe> mRecipeList;
+
+    public static final String TAG = RecipesFragment.class.getSimpleName();
     private static final String RECIPES_KEY = "recipes";
+
     @BindView(R.id.recipeRecycler)
     RecyclerView mRecipeRecycler;
     @BindView(R.id.swipe_refresh)
     SwipeRefreshLayout mSwipeRefresh;
 
-    private RecipesAdapter adapter;
-    private List<Recipe> mRecipeList;
+    public RecipesFragment() {
+        // Required empty public constructor
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_recipes);
-        ButterKnife.bind(this);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        View view = inflater.inflate(R.layout.fragment_recipes, container, false);
+        ButterKnife.bind(this, view);
 
-        initView();
+        mContext = getActivity();
+        initViews();
 
-        if (savedInstanceState == null || !savedInstanceState.containsKey(RECIPES_KEY)) {
+        if (savedInstanceState != null && savedInstanceState.containsKey(RECIPES_KEY)) {
             mSwipeRefresh.setRefreshing(true);
             loadRecipes();
         } else {
-            mRecipeList = savedInstanceState.getParcelable(RECIPES_KEY);
+            //mRecipeList = savedInstanceState.getParcelable(RECIPES_KEY);
         }
 
         // set refresh listener
@@ -59,11 +73,12 @@ public class RecipesActivity extends AppCompatActivity {
             }
         });
 
-        // load the recipes from server
         loadRecipes();
+
+        return view;
+
     }
 
-    // refresh medthod
     private void refresh() {
         // delay the refresh for content fetch
         new Handler().postDelayed(new Runnable() {
@@ -77,16 +92,16 @@ public class RecipesActivity extends AppCompatActivity {
         },3000);
     }
 
-    private void initView() {
-        mRecipeList = new ArrayList<>();
+    private void initViews() {
+        adapter = new RecipesAdapter(mContext, this);
+        RecyclerView.LayoutManager layoutManager =
+                new LinearLayoutManager(mContext, LinearLayoutManager.VERTICAL, false);
+        mRecipeRecycler.setLayoutManager(layoutManager);
         mRecipeRecycler.setHasFixedSize(true);
-        adapter = new RecipesAdapter(this,mRecipeList);
-        mRecipeRecycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRecipeRecycler.setAdapter(adapter);
-        // add recycler item decoration
-        mRecipeRecycler.addItemDecoration(new SpacingItemDecoration((int) getResources().getDimension(R.dimen.margin_medium)));
-        // on itemTouchListener
+        mRecipeRecycler.addItemDecoration(new SpacingItemDecoration((int)
+                getResources().getDimension(R.dimen.margin_medium)));
         mRecipeRecycler.addOnItemTouchListener(new RecyclerView.SimpleOnItemTouchListener());
+        mRecipeRecycler.setAdapter(adapter);
     }
 
     // Load recipes from server
@@ -99,20 +114,33 @@ public class RecipesActivity extends AppCompatActivity {
             public void onResponse(Call<List<Recipe>> call, Response<List<Recipe>> response) {
                 if (response.isSuccessful()) {
                     mRecipeList = response.body();
-                    mRecipeRecycler.setAdapter(new RecipesAdapter(getApplicationContext(),mRecipeList));
+                    //mRecipeRecycler.setAdapter(new RecipesAdapter(mContext,mRecipeList));
                     adapter.setData(mRecipeList);
                     adapter.notifyDataSetChanged();
                     mSwipeRefresh.setRefreshing(false);
                 } else {
-                    finish();
+                    getActivity().finish();
                 }
             }
 
             @Override
             public void onFailure(Call<List<Recipe>> call, Throwable t) {
                 // log the error message
-                Log.e(LOG_TAG, t.getMessage());
+                Log.e(TAG, t.getMessage());
             }
         });
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+    }
+
+    @Override
+    public void onRecipeClick(Recipe recipe) {
+        Intent intent = new Intent(mContext, StepsListActivity.class);
+        intent.putExtra(StepsListActivity.INTENT_EXTRA, recipe);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
     }
 }

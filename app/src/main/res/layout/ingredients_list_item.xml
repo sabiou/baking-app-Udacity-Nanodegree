@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+    <data>
+        <variable
+            name="ingredient"
+            type="xyz.godi.bakingapp.models.Ingredients" />
+    </data>
+
+        <TextView
+            android:id="@+id/ingredient_list"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{ingredient.ingredient}"
+            android:padding="12dp"
+            android:textAppearance="?attr/textAppearanceListItem" />
+
+</layout>
