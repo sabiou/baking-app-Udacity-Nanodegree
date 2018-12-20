@@ -13,7 +13,7 @@ Baking app allow Udacity’s resident baker-in-chief, Miriam, to share her recip
 * [ExoPlayer](github.com/google/exoplayer)
 * [Espresso testing](https://developer.android.com/training/testing/espresso/)
 
-# Requirements
+## Requirements
 * Android Studio
 * Android SDK & tools version 28
 
