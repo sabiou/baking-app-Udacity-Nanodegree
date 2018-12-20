@@ -9,4 +9,13 @@
     <string name="previous">Previous</string>
     <string name="next">Next</string>
     <string name="ingredients">Ingredients</string>
+    <string name="index_key">index</string>
+    <string name="player_position">eexo_player_position</string>
+    <string name="play_when_ready">play_when_ready</string>
+    <string name="no_network_message">Oups ! look like you\'re not connected on internet</string>
+    <string name="ingredients_and_steps">Ingredients and Steps</string>
+    <string name="step_description">Step Description</string>
+    <string name="error_interface" />
+    <string name="next_step">Next</string>
+    <string name="previous_step">Previous</string>
 </resources>

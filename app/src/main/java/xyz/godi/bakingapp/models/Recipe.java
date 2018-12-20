@@ -34,11 +34,22 @@ public class Recipe implements Parcelable {
     @SerializedName("image")
     private String image;
 
+    public Recipe() {
+        this.image = "";
+        this.servings = 0;
+        this.name = "";
+        this.ingredients = new ArrayList<>();
+        this.id = 0;
+        this.steps = new ArrayList<>();
+    }
+
     protected Recipe(Parcel in) {
         id = in.readInt();
         name = in.readString();
-        in.readList(ingredients,Ingredients.class.getClassLoader());
-        in.readList(steps,Steps.class.getClassLoader());
+        ingredients = new ArrayList<>();
+        in.readTypedList(ingredients, Ingredients.CREATOR);
+        steps = new ArrayList<>();
+        in.readTypedList(steps,Steps.CREATOR);
         servings = in.readInt();
         image = in.readString();
     }
@@ -52,8 +63,8 @@ public class Recipe implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(id);
         dest.writeString(name);
-        dest.writeList(ingredients);
-        dest.writeList(steps);
+        dest.writeTypedList(ingredients);
+        dest.writeTypedList(steps);
         dest.writeInt(servings);
         dest.writeString(image);
     }
@@ -78,31 +89,13 @@ public class Recipe implements Parcelable {
         return ingredients;
     }
 
-    public void setIngredients(List<Ingredients> ingredients) {
-        this.ingredients = ingredients;
-    }
 
     public List<Steps> getSteps() {
         return steps;
     }
 
-    public void setSteps(List<Steps> steps) {
-        this.steps = steps;
-    }
-
-    public int getServings() {
-        return servings;
-    }
-
-    public void setServings(int servings) {
-        this.servings = servings;
-    }
 
     public String getImage() {
         return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 }

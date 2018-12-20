@@ -18,18 +18,19 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import xyz.godi.bakingapp.R;
 import xyz.godi.bakingapp.models.Recipe;
-import xyz.godi.bakingapp.ui.activities.RecipeDetailsActivity;
+import xyz.godi.bakingapp.utils.Listeners;
 
 public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeViewHolder> {
 
-    private static final String RECIPES_KEY = "recipes";
+    private static final String RECIPES_KEY = "recipe";
 
     private List<Recipe> mRecipes;
     private Context mContext;
+    private RecipeClickListener mListener;
 
-    public RecipesAdapter(Context context, List<Recipe> recipes) {
+    public RecipesAdapter(Context context, RecipeClickListener listener) {
         this.mContext = context;
-        this.mRecipes = recipes;
+        this.mListener = listener;
     }
 
     @NonNull
@@ -58,12 +59,16 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
 
     @Override
     public int getItemCount() {
-        return mRecipes.size();
+        return mRecipes == null ? 0 : mRecipes.size();
     }
 
     public void setData(List<Recipe> mRecipeList) {
         mRecipes = mRecipeList;
         notifyDataSetChanged();
+    }
+
+    public interface RecipeClickListener {
+        void onRecipeClick(Recipe recipe);
     }
 
     class RecipeViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -81,10 +86,9 @@ public class RecipesAdapter extends RecyclerView.Adapter<RecipesAdapter.RecipeVi
 
         @Override
         public void onClick(View v) {
-            Recipe recipeItem = mRecipes.get(getAdapterPosition());
-            Intent intent = new Intent(mContext,RecipeDetailsActivity.class);
-            intent.putExtra(RECIPES_KEY,recipeItem);
-            v.getContext().startActivity(intent);
+            int position = getAdapterPosition();
+            Recipe recipe = mRecipes.get(position);
+            mListener.onRecipeClick(recipe);
         }
     }
 }

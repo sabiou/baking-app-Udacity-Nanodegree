@@ -1,32 +1,49 @@
 package xyz.godi.bakingapp.adapters;
 
+import android.content.Context;
+import android.databinding.DataBindingUtil;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.List;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import xyz.godi.bakingapp.R;
-import xyz.godi.bakingapp.holders.IngredientsViewHolder;
-import xyz.godi.bakingapp.holders.StepsViewHolder;
+import xyz.godi.bakingapp.databinding.IngredientsListItemBinding;
+import xyz.godi.bakingapp.databinding.RecipeStepItemBinding;
 import xyz.godi.bakingapp.models.Ingredients;
 import xyz.godi.bakingapp.models.Recipe;
 import xyz.godi.bakingapp.models.Steps;
-import xyz.godi.bakingapp.utils.Listeners;
 
 public class RecipesStepsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private static List<Steps> steps;
+    private List<Object> dataSet;
     private Recipe mRecipe;
-    private int stepIndex;
-    private Listeners.OnItemClickListener mListener;
+    private boolean isTWoPane;
+    private Context mContext;
+    private StepsClickListener mListener;
 
-    public RecipesStepsAdapter(Recipe recipe, int index) {
-        steps = recipe.getSteps();
-        this.stepIndex = index;
+    public RecipesStepsAdapter( Context mContext, List<Object> dataSet, boolean isTWoPane, StepsClickListener mListener) {
+        this.dataSet = dataSet;
+        this.isTWoPane = isTWoPane;
+        this.mContext = mContext;
+        this.mListener = mListener;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (dataSet.get(position) instanceof Ingredients) {
+            return 0;
+        } else if (dataSet.get(position) instanceof Steps){
+            return 1;
+        }
+        return -1;
     }
 
     @NonNull
@@ -45,49 +62,66 @@ public class RecipesStepsAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
         if (holder instanceof IngredientsViewHolder) {
             IngredientsViewHolder viewHolder = (IngredientsViewHolder) holder;
-            // format the ingredients list text
-            StringBuilder builder = new StringBuilder();
-            // itterate trough ingredients list
-            for (int i = 0; i < mRecipe.getIngredients().size(); i++) {
-                Ingredients ingredients = mRecipe.getIngredients().get(i);
-                builder.append(String.format(Locale.getDefault(), "• %s (%d %s)",
-                        ingredients.getIngredient(), ingredients.getQuantity(), ingredients.getMeasure()));
-                if (i != mRecipe.getIngredients().size() - 1) {
-                    builder.append("\n");
-                }
+            Ingredients ingredients = (Ingredients) dataSet.get(position);
+            if (ingredients != null) {
+                viewHolder.bind(ingredients);
             }
-            // set the ingredients content
-            viewHolder.ingredientsText.setText(builder.toString());
         } else {
             StepsViewHolder viewHolder = (StepsViewHolder) holder;
-            // step order
-            viewHolder.stepOrder.setText(String.format("%s.", String.valueOf(position - 1)));
-            // step description
-            viewHolder.stepName.setText(mRecipe.getSteps().get(position - 1).getDescription());
+            Steps steps = (Steps) dataSet.get(position);
 
-            // set the onClickListener
-            holder.itemView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onItemCLick(position - 1);
-                    }
-                }
-            });
-        }
-    }
+            if(steps != null) {
+                // description
+                viewHolder.bind(steps);
+            }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 0) {
-            return 0;
-        } else {
-            return 1;
         }
     }
 
     @Override
     public int getItemCount() {
-        return mRecipe.getSteps().size() + 1;
+        return dataSet == null ? 0 : dataSet.size();
+    }
+
+    public interface StepsClickListener {
+        void onStepClick(Steps steps);
+    }
+
+    class IngredientsViewHolder extends RecyclerView.ViewHolder {
+
+        private IngredientsListItemBinding ingredientsBinding;
+
+        IngredientsViewHolder(View itemView) {
+            super(itemView);
+            ingredientsBinding = DataBindingUtil.bind(itemView);
+        }
+
+        void bind(Ingredients ingredients) {
+            ingredientsBinding.setIngredient(ingredients);
+            ingredientsBinding.executePendingBindings();
+        }
+    }
+
+    class StepsViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        private RecipeStepItemBinding stepItemBinding;
+
+        StepsViewHolder(View itemView) {
+            super(itemView);
+            stepItemBinding = DataBindingUtil.bind(itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        void bind(Steps steps) {
+            stepItemBinding.setStep(steps);
+            stepItemBinding.executePendingBindings();
+        }
+
+        @Override
+        public void onClick(View v) {
+            int position = getAdapterPosition();
+            Steps steps = (Steps) dataSet.get(position);
+            mListener.onStepClick(steps);
+        }
     }
 }
