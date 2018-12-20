@@ -1,12 +1,16 @@
 package xyz.godi.bakingapp.ui.activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Parcelable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,11 +23,15 @@ import xyz.godi.bakingapp.models.Ingredients;
 import xyz.godi.bakingapp.models.Recipe;
 import xyz.godi.bakingapp.models.Steps;
 import xyz.godi.bakingapp.ui.fragments.StepDetailsFragment;
+import xyz.godi.bakingapp.widgets.RecipeWidgetProvider;
 
 public class StepsListActivity extends AppCompatActivity
         implements RecipesStepsAdapter.StepsClickListener, StepDetailsFragment.OnStepClickListener {
 
     public static final String INTENT_EXTRA = "recipe";
+    public static final String WIDGET_PREF = "widget_prefs";
+    public static final String ID_PREF = "id";
+    public static final String NAME_PREF = "name";
 
     private boolean isTwoPane;
     private int mRecipeId;
@@ -105,10 +113,39 @@ public class StepsListActivity extends AppCompatActivity
                 Intent intent = new Intent(this, StepsDetailsActivity.class);
                 intent.putExtra(StepsDetailsActivity.EXTRA, steps);
                 intent.putExtra(StepsDetailsActivity.EXTRA_NAME, mRecipeName);
-                intent.putParcelableArrayListExtra(StepsDetailsActivity.EXTRA_LIST, (ArrayList<? extends Parcelable >) stepsList);
+                intent.putParcelableArrayListExtra(StepsDetailsActivity.EXTRA_LIST,
+                        (ArrayList<? extends Parcelable >) stepsList);
                 startActivity(intent);
             }
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.add_widget_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_add_widget:
+                addToPrefsForWidget();
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void addToPrefsForWidget() {
+        SharedPreferences preferences = getApplicationContext().getSharedPreferences(WIDGET_PREF, MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putInt(ID_PREF, mRecipeId);
+        editor.putString(NAME_PREF, mRecipeName);
+        editor.apply();
+
+        // add selected recipe to widget
+        RecipeWidgetProvider.updateWidget(this);
     }
 
     @Override
