@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.com/godixyz/BakingApp.svg?branch=master)](https://travis-ci.com/godixyz/BakingApp)
 # BakingApp
 Udacity Android developer Nanodegree project
 
